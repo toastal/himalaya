@@ -1,12 +1,5 @@
 use error_chain::error_chain;
-use lettre::{self, 
-    transport::{
-        smtp::SmtpTransport,
-        smtp::client::Tls,
-        smtp::client::TlsParameters
-    },
-    Transport
-};
+use lettre::{self, transport::smtp::SmtpTransport, Transport};
 
 use crate::config::model::Account;
 
@@ -26,15 +19,8 @@ pub fn send(account: &Account, msg: &lettre::Message) -> Result<()> {
         SmtpTransport::relay
     };
 
-    let tls = TlsParameters::builder(account.smtp_host.to_string())
-        .dangerous_accept_invalid_hostnames(account.smtp_insecure())
-        .dangerous_accept_invalid_certs(account.smtp_insecure())
-        .build()
-        .unwrap();
-
     smtp_relay(&account.smtp_host)?
         .port(account.smtp_port)
-        .tls(Tls::Wrapper(tls))
         .credentials(account.smtp_creds()?)
         .build()
         .send(msg)?;

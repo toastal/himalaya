@@ -25,14 +25,12 @@ pub struct Account {
     pub imap_host: String,
     pub imap_port: u16,
     pub imap_starttls: Option<bool>,
-    pub imap_insecure: Option<bool>,
     pub imap_login: String,
     pub imap_passwd_cmd: String,
 
     pub smtp_host: String,
     pub smtp_port: u16,
     pub smtp_starttls: Option<bool>,
-    pub smtp_insecure: Option<bool>,
     pub smtp_login: String,
     pub smtp_passwd_cmd: String,
 }
@@ -56,13 +54,6 @@ impl Account {
         }
     }
 
-    pub fn imap_insecure(&self) -> bool {
-        match self.imap_insecure {
-            Some(true) => true,
-            _ => false,
-        }
-    }
-
     pub fn smtp_creds(&self) -> Result<SmtpCredentials> {
         let passwd = run_cmd(&self.smtp_passwd_cmd).chain_err(|| "Cannot run SMTP passwd cmd")?;
         let passwd = passwd.trim_end_matches("\n").to_owned();
@@ -72,13 +63,6 @@ impl Account {
 
     pub fn smtp_starttls(&self) -> bool {
         match self.smtp_starttls {
-            Some(true) => true,
-            _ => false,
-        }
-    }
-
-    pub fn smtp_insecure(&self) -> bool {
-        match self.smtp_insecure {
             Some(true) => true,
             _ => false,
         }
